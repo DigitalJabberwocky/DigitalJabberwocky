@@ -5,14 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
-/*
- * To change this template, choose Tools | Templates and open the template in
- * the editor.
- */
-/**
- *
- * @author Daniel
- */
 public class ImageCombiner extends javax.swing.JFrame {
 
     /**
