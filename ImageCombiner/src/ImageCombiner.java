@@ -1,16 +1,14 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * To change this template, choose Tools | Templates and open the template in
+ * the editor.
  */
-
 /**
  *
  * @author Daniel
@@ -42,6 +40,7 @@ public class ImageCombiner extends javax.swing.JFrame {
         txt2 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         txt1 = new javax.swing.JTextField();
+        chkColour = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Image Combiner");
@@ -63,6 +62,8 @@ public class ImageCombiner extends javax.swing.JFrame {
 
         jLabel1.setText("Top Image:");
 
+        chkColour.setText("Colour Combine");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -70,21 +71,23 @@ public class ImageCombiner extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblFeedback, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabel3)
+                            .addComponent(chkColour))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1))
                             .addComponent(txt3, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txt1)
-                            .addComponent(txt2)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
-                    .addComponent(lblFeedback, javax.swing.GroupLayout.DEFAULT_SIZE, 747, Short.MAX_VALUE))
+                            .addComponent(txt2))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -105,10 +108,11 @@ public class ImageCombiner extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(chkColour))
                 .addGap(18, 18, 18)
                 .addComponent(lblFeedback, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
@@ -117,94 +121,65 @@ public class ImageCombiner extends javax.swing.JFrame {
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         try {
             //Get Images and sizes
-            BufferedImage topImage = ImageIO.read(new File(txt1.getText()));
-            BufferedImage bottomImage = ImageIO.read(new File(txt2.getText()));
-            int width = Math.max(topImage.getWidth(), bottomImage.getWidth());
-            int height = topImage.getHeight() + bottomImage.getHeight();
+            ImageWithCorners topImage = new ImageWithCorners(ImageIO.read(new File(txt1.getText())));
+            ImageWithCorners bottomImage = new ImageWithCorners(ImageIO.read(new File(txt2.getText())));
+            BufferedImage combinedImage;
 
-            //Get non-white pixels where white = 255,255,255
-            int bottomLeft = 0;
-            int bottomRight = 0;
-            int topLeft = 0;
-            int topRight = 0;
-            
-            for (int x = 0; x < topImage.getWidth(); x++)
-            {
-                Color color = new Color(topImage.getRGB(x, topImage.getHeight()));
-                if ((color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) == false)
-                    bottomLeft = x;
-                else if (x == topImage.getWidth())
-                    throw new Exception();
-            }
-            for (int x = topImage.getWidth(); x < 0; x--)
-            {
-                Color color = new Color(topImage.getRGB(x, topImage.getHeight()));
-                if ((color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) == false)
-                    bottomRight = x;
-                else if (x == 1)
-                    throw new Exception();
-            }
-            if (bottomRight == bottomLeft )
-                throw new Exception();
-                
-            for (int x = 0; x < bottomImage.getWidth(); x++)
-            {
-                Color color = new Color(bottomImage.getRGB(x, bottomImage.getHeight()));
-                if ((color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) == false)
-                    topLeft = x;
-                else if (x == topImage.getWidth())
-                    throw new Exception();
-            }
-            for (int x = bottomImage.getWidth(); x < 0; x--)
-            {
-                Color color = new Color(bottomImage.getRGB(x, bottomImage.getHeight()));
-                if ((color.getRed() == 255 && color.getGreen() == 255 && color.getBlue() == 255) == false)
-                    topRight = x;
-                else if (x == 1)
-                    throw new Exception();
-            }
-            if (topLeft == topRight)
-                throw new Exception();
-            
-            //Do maths for combining
-			bottomDistance = bottomRight - bottomLeft;
-			topDistance = topRight - topLeft;
-			
-            if (bottomLeft == topLeft && bottomRight == topRight) {
-                
-            }
-            else if (bottomDistance == topDistance)
-            {
-               
-            }
-            else if (bottomDistance > topDistance)
-            {
-				decimal difference = bottomDistance / topDistance;
-				
-				
-               /*60
-			   90
-			   
-			   2/3
-			   
-			   */
-            }
-            else if (bottomDistance < topDistance)
-            {
-               
-            }
-            
-            
-            //Combine vertically
-            BufferedImage combinedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            Graphics combinedImageGraphics = combinedImage.getGraphics();
-            combinedImageGraphics.drawImage(topImage, 0, 0, null);
-            combinedImageGraphics.drawImage(bottomImage, 0, topImage.getHeight(), null);
+            if (chkColour.isSelected()) {
+                if (topImage.bottomDistance() > bottomImage.topDistance()) {
+                    //Scale down top image
+                    double difference = bottomImage.topDistance() / topImage.bottomDistance();
+                    BufferedImage scaledImage = new BufferedImage((int)Math.ceil(topImage.imageWidth() * difference),
+                            (int)Math.ceil(topImage.imageWidth() * difference), BufferedImage.TYPE_INT_ARGB);
+                    Graphics scaledImageGraphics = scaledImage.getGraphics();
+                    scaledImageGraphics.drawImage(topImage.image(), 0, 0, (int)Math.ceil(topImage.imageWidth() * difference),
+                            (int)Math.ceil(topImage.imageWidth() * difference), null);
+                    topImage = new ImageWithCorners(scaledImage);
 
+                    //Combine vertically
+                    combinedImage = new BufferedImage(Math.max(topImage.imageWidth(), bottomImage.imageWidth()),
+                    topImage.imageHeight() + bottomImage.imageHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics combinedImageGraphics = combinedImage.getGraphics();
+                    combinedImageGraphics.drawImage(topImage.image(), bottomImage.topLeft().x - topImage.bottomLeft().x, 0, null);
+                    combinedImageGraphics.drawImage(bottomImage.image(), 0, topImage.imageHeight(), null);
+                }
+                else if (topImage.bottomDistance() < bottomImage.topDistance()) {
+                    //Scale down bottom image
+                    double difference = topImage.bottomDistance() / bottomImage.topDistance();
+                    BufferedImage scaledImage = new BufferedImage((int)Math.ceil(bottomImage.imageWidth() * difference),
+                            (int)Math.ceil(bottomImage.imageWidth() * difference), BufferedImage.TYPE_INT_ARGB);
+                    Graphics scaledImageGraphics = scaledImage.getGraphics();
+                    scaledImageGraphics.drawImage(bottomImage.image(), 0, 0, (int)Math.ceil(bottomImage.imageWidth() * difference),
+                            (int)Math.ceil(bottomImage.imageWidth() * difference), null);
+                    topImage = new ImageWithCorners(scaledImage);
+
+                    //Combine vertically
+                    combinedImage = new BufferedImage(Math.max(topImage.imageWidth(), bottomImage.imageWidth()),
+                    topImage.imageHeight() + bottomImage.imageHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics combinedImageGraphics = combinedImage.getGraphics();
+                    combinedImageGraphics.drawImage(topImage.image(), 0, 0, null);
+                    combinedImageGraphics.drawImage(bottomImage.image(), topImage.bottomLeft().x - bottomImage.topLeft().x, topImage.imageHeight(), null);
+                }
+                else {
+                    //Combine vertically
+                    combinedImage = new BufferedImage(Math.max(topImage.imageWidth(), bottomImage.imageWidth()),
+                    topImage.imageHeight() + bottomImage.imageHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics combinedImageGraphics = combinedImage.getGraphics();
+                    combinedImageGraphics.drawImage(topImage.image(), bottomImage.topLeft().x - topImage.bottomLeft().x, 0, null);
+                    combinedImageGraphics.drawImage(bottomImage.image(), 0, topImage.imageHeight(), null);
+                }
+            }
+            else {
+                //Combine vertically
+                 combinedImage = new BufferedImage(Math.max(topImage.imageWidth(), bottomImage.imageWidth()),
+                 topImage.imageHeight() + bottomImage.imageHeight(), BufferedImage.TYPE_INT_ARGB);
+                 Graphics combinedImageGraphics = combinedImage.getGraphics();
+                 combinedImageGraphics.drawImage(topImage.image(), 0, 0, null);
+                 combinedImageGraphics.drawImage(bottomImage.image(), topImage.bottomLeft().x - bottomImage.topLeft().x, topImage.imageHeight(), null);
+            }
+            
             //Save to new file
-            //Although being rendered as a png, you still need the .png on the end of the Output textbox
             ImageIO.write(combinedImage, "PNG", new File(txt3.getText()));
-
             lblFeedback.setForeground(Color.GREEN);
             lblFeedback.setText("Success!");
         }
@@ -257,6 +232,7 @@ public class ImageCombiner extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox chkColour;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
