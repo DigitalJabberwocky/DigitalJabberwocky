@@ -1,5 +1,5 @@
 
-//This class stores an image with its outermost points of non-white colour where white = (255,255,255)
+//This class stores an image with its outermost points of non-white colour. White must be (R,G,B) = (255,255,255)
 
 import java.awt.Color;
 import java.awt.Point;

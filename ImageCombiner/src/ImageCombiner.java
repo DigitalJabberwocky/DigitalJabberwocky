@@ -52,8 +52,15 @@ public class ImageCombiner extends javax.swing.JFrame {
 
         jLabel2.setText("Bottom Image:");
 
+        txt3.setToolTipText("");
+
+        txt2.setToolTipText("");
+
         jLabel1.setText("Top Image:");
 
+        txt1.setToolTipText("");
+
+        chkColour.setSelected(true);
         chkColour.setText("Colour Combine");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -68,14 +75,14 @@ public class ImageCombiner extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(chkColour))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel3))
+                        .addGap(32, 32, 32)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(18, 18, 18)
+                                .addComponent(chkColour)
+                                .addGap(4, 4, 4)
                                 .addComponent(jButton1))
                             .addComponent(txt3, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(txt1)
@@ -120,7 +127,7 @@ public class ImageCombiner extends javax.swing.JFrame {
             if (chkColour.isSelected()) {
                 if (topImage.bottomDistance() > bottomImage.topDistance()) {
                     //Scale down top image
-                    double difference = bottomImage.topDistance() / topImage.bottomDistance();
+                    double difference = (double)bottomImage.topDistance() / (double)topImage.bottomDistance();
                     BufferedImage scaledImage = new BufferedImage((int)Math.ceil(topImage.imageWidth() * difference),
                             (int)Math.ceil(topImage.imageWidth() * difference), BufferedImage.TYPE_INT_ARGB);
                     Graphics scaledImageGraphics = scaledImage.getGraphics();
@@ -137,7 +144,7 @@ public class ImageCombiner extends javax.swing.JFrame {
                 }
                 else if (topImage.bottomDistance() < bottomImage.topDistance()) {
                     //Scale down bottom image
-                    double difference = topImage.bottomDistance() / bottomImage.topDistance();
+                    double difference = (double)topImage.bottomDistance() / (double)bottomImage.topDistance();
                     BufferedImage scaledImage = new BufferedImage((int)Math.ceil(bottomImage.imageWidth() * difference),
                             (int)Math.ceil(bottomImage.imageWidth() * difference), BufferedImage.TYPE_INT_ARGB);
                     Graphics scaledImageGraphics = scaledImage.getGraphics();
