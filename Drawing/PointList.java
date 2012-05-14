@@ -7,11 +7,13 @@ private Point  p;
 private Color c;
 //determines if the point is the end of a line
 private boolean end = false;
+private String type;
 
 //Creates instance of object sets point and colour of line
-public PointList(Point pnt, Color col){
+public PointList(Point pnt, Color col, String t){
 	p = pnt;
 	c = col;
+	type = t;
 	
 }
 
@@ -20,6 +22,7 @@ public PointList(){
 	p = null;
 	c = null;
 	end = true;
+	type = null;
 }
 
 //returns the values of the point colour, and end of line
@@ -35,4 +38,7 @@ public boolean getEnd(){
 	return end;
 }
 
+public String getType(){
+	return type;
+}
 }
