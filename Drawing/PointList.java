@@ -25,7 +25,7 @@ public PointList(){
 	type = null;
 }
 
-//returns the values of the point colour, and end of line
+//returns the values of the point, colour, and end of line
 public Point getPoint(){
 	return p;
 }
@@ -38,6 +38,12 @@ public boolean getEnd(){
 	return end;
 }
 
+//sets end of line
+public void setEnd(boolean f){
+	end = f;
+}
+
+//returns the body type
 public String getType(){
 	return type;
 }
