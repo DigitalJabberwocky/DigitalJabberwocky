@@ -57,10 +57,12 @@ public class DrawOnImage2
 		{
 			this.drawingArea = drawingArea;
 			
-			add(createButton("Load Image", null));
-			add( createButton("Save Image",null) );
-			add( createButton("Clear Drawing", null) );
-			add( createButton("Choose Colour", null));
+			add( createButton("Load", null));
+			add( createButton("Save",null) );
+			add( createButton("Clear", null) );
+			add( createButton("Colour", null));
+			add( createButton("Undo", null));
+			add( createButton("Eraser", null));
 		}
 
 		//creates the button
@@ -78,14 +80,19 @@ public class DrawOnImage2
 		{
 			JButton button = (JButton)e.getSource();
 
-			if ("Clear Drawing".equals(e.getActionCommand()))
+			if ("Clear".equals(e.getActionCommand()))
 				drawingArea.clear();	
-			else if ("Save Image".equals(e.getActionCommand()))
+			else if ("Save".equals(e.getActionCommand()))
 				drawingArea.save();
-			else if("Choose Colour".equals(e.getActionCommand()))
+			else if("Colour".equals(e.getActionCommand()))
 				drawingArea.colour();
-			else
+			else if ("Load".equals(e.getActionCommand()))
 				drawingArea.load();
+			else if("Undo".equals(e.getActionCommand()))
+				drawingArea.undo();
+			else
+				drawingArea.erase();
+		
 		}
 	}
 
@@ -93,9 +100,15 @@ public class DrawOnImage2
 	{
 		// creates an image, graphics and two points
 		BufferedImage image;
-		Graphics2D g2d;
+		public Graphics2D g2d;
 		Point startPoint = null;
 		Point endPoint = null;
+		//variables used for erasing image
+		boolean erase = false;
+		Color tmp = Color.BLACK;
+		//used to determine if croping required
+		boolean loaded = false;
+		int count =0;
 
 		public DrawingArea()
 		{
@@ -121,6 +134,7 @@ public class DrawOnImage2
 			g.drawImage(image, 0, 0, null);
 			
 			//draws the line using the list
+			
 			for(int i = 0; i < (pts.size() - 1); i++){
 				if(pts.get(i).getEnd() == true || pts.get(i+1).getEnd() == true ){}
 				else{
@@ -130,42 +144,168 @@ public class DrawOnImage2
 			}			
 		}
 
+		//creates new image
 		private void createEmptyImage()
 		{
 			image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
 			g2d = (Graphics2D)image.getGraphics();
 			g2d.setColor(Color.WHITE);
+			g2d.setBackground(Color.WHITE);
+			count++;
 		}
 
+		//clears the canvas
 		public void clear()
 		{
 			pts.clear();
 			createEmptyImage();
-			repaint();	
+			repaint();				
+			erase = true;
+			erase();
+			loaded = false;
 		}
 
+		//saves image to file
 		public void save(){
-			try{					
-			ImageIO.write(image, "PNG", new File("Image.png"));
+			try{
+				g2d.setColor(new Color(255,255,255));
+				g2d.fillRect(0, 0, image.getWidth(),image.getHeight());
+				//draws lines to image
+				for (int i = 0; i < (pts.size()-1); i++){
+					if(pts.get(i).getEnd() == true || pts.get(i+1).getEnd() == true){}
+					else{
+						g2d.setColor(pts.get(i).getColor());
+						g2d.drawLine(pts.get(i).getPoint().x, pts.get(i).getPoint().y, pts.get(i+1).getPoint().x, pts.get(i+1).getPoint().y);
+					}
+						
+				}
+				BufferedImage im = image;
+				//if image was completly drawn crop image
+			if(loaded == false)
+				im = crop(image);
+				//saves image in default location
+			String f = "Image_" + bodypart + "_" + Integer.toString(count) + ".png";
+			ImageIO.write(im, "PNG", new File(f));
+		
 			}
 			catch(Exception e){
 				System.err.println(e.getMessage());
 			}
 		}
 		
+		//crops image
+		private BufferedImage crop(BufferedImage i){
+			
+			try{
+				//initilises starting mins and maxs
+			int xmin = i.getWidth(); 
+			int xmax = 0; 
+			int ymin = i.getHeight();
+			int ymax = 0;
+			
+			//loops through point list to get min and max
+			for(int h = 0; h < pts.size(); h++){
+				//if end identifier do nothing
+				if(pts.get(h).getEnd() == true){}
+				else{
+					//gets point
+				Point v = pts.get(h).getPoint();
+				
+					//checks for larger and smaller and sets values accordingly
+				if(v.x < xmin)
+					xmin = v.x;
+				
+				if(v.x > xmax)
+					xmax = v.x;
+				
+				if(v.y < ymin)
+					ymin = v.y;
+
+				if (v.y > ymax)
+					ymax = v.y;
+				}
+			}
+			
+			//creates new image
+			BufferedImage c = null;
+			
+			//crops image 
+			if((xmin - 5) > 0 && (ymin - 5) > 0)
+				c = i.getSubimage(xmin - 5, ymin - 5, (xmax - xmin + 15),(ymax - ymin + 15));
+			else
+				c = i.getSubimage(0, 0,(xmax - xmin + 15), (ymax - ymin + 15));
+			
+			//returns croped image
+			return c;
+			}
+			catch(Exception e){
+				//if error occurs return original image
+				System.err.println(e.getMessage());
+				return i;
+			}
+			
+		}
+		
+		//loads image
 		public void load(){
 			try{
-				File f = new File("image.png");
+				//gets default file name
+				File f = new File("Image_null_1.png");
+				//loads image and draws to canvas 
 				image = ImageIO.read(f);
+				loaded = true;
+				g2d.drawImage(image, 0, 0, null);
+				repaint();
 			}
 			catch(Exception e){
 				System.err.println(e.getMessage());
 			}
 		}
 		
-		public void colour(){
-						
+		//chages the color of the line
+		public void colour(){						
 			newColor = JColorChooser.showDialog(DrawingArea.this, "Pick a Color", Color.WHITE);
+		}
+		
+		//undos previous work
+		public void undo(){
+		//removes eraser if on
+			erase = true;
+			erase();	
+		//checks if there is stuff inside list
+		if(pts.size() >= 2){	
+			//sets up pointer and removes last entry
+		int count = (pts.size()-2);
+		pts.remove(pts.size()-1);
+		//loops through list removing entry to first end of line indetifier or end of list
+		while(pts.get(count).getEnd() == false && count > 0){
+			pts.remove(count);
+			count--;		
+		}
+		//sets last value in list to be a end of line identifier
+		if(pts.size() == 1)
+			pts.get(0).setEnd(true);
+		//repaints the picture
+		repaint();
+		}
+		
+		}
+		
+		//erases part of image
+		public void erase(){
+			//if eraser if off
+			if(erase == false){
+				//turns eraser on stores old colour in temp variable
+				erase = true;
+				tmp = newColor;
+				//sets line colour to background image colour
+				newColor = g2d.getBackground();				
+			}
+			else{
+				//turns eraser off and returns line colour to old colour				
+				erase = false;
+				newColor = tmp;
+			}
 		}
 		
 		class MyMouseListener extends MouseInputAdapter
