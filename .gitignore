@@ -30,9 +30,9 @@ public class Server{
 		}
 	}
 
-	
 
-	
+
+
 	public void destroy(){
 		try{
 		   serv.close();
@@ -42,5 +42,5 @@ public class Server{
 		    System.exit(-1);
 		}
 	}
-	
+
 }
