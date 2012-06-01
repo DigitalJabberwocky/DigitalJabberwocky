@@ -64,6 +64,52 @@ function outputImage(image){
 $('#waiting').hide();
             }
 
+			
+			
+			
+			
+			
+	
+function waitForImage(){
+	$('#Page').hide();
+	$('#waiting').show();
+	
+	id = 10;  // STUB
+
+	
+	var waiting = $.ajax({
+		type: "POST",
+		url: "server.php",
+		data: "w=1",
+		cache: false,
+		async: false
+	}).responseText;
+	
+		// CHECK IF THE PLAYER HAS FINISHED DRAWING
+		// IF THEY HAVE, waiting = 0;
+
+		
+	if(waiting == "0"){
+			// SHOW PART OF THE OTHER IMAGE
+//		    canvas.width = canvas.width;
+//		    canvas.height = canvas.height;
+		    canvasInit();
+//		    $('#colors li:first').click();
+//		    $('#brush_size').change();
+//		    undoHistory = [];
+			$('#Page').show();
+		    //console.log(canvas.toDataURL());
+	}else{
+		setTimeout(waitForImage, 500);
+	}
+}	
+			
+			
+			
+			
+			
+			
+			
 
             function doIt(){
                 var canvas, cntxt, top, left, draw, draw = 0;
@@ -111,107 +157,10 @@ $('#waiting').hide();
                 $('#export').click(function(e){
                     e.preventDefault();
                     outputImage(canvas.toDataURL());
-			$('#Page').hide();
-			$('#waiting').show();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function waitForImage(){
-	id = 10;  // STUB
-
-	var waiting = $.ajax({
-		type: "POST",
-		url: "server.php",
-		data: "w=1",
-		cache: false,
-		async: false
-	}).responseText;
-	
-		// CHECK IF THE PLAYER HAS FINISHED DRAWING
-		// IF THEY HAVE, waiting = 0;
-
-		
-	if(waiting == 0){
-			// SHOW PART OF THE OTHER IMAGE
-		    canvas.width = canvas.width;
-		    canvas.height = canvas.height;
-		    canvasInit();
-		    $('#colors li:first').click();
-		    $('#brush_size').change();
-		    undoHistory = [];
-			$('#Page').show();
-		    //console.log(canvas.toDataURL());
-			waiting = 4;
-	}else{
-		setTimeout(waitForImage, 500);
-	}
-}
-
-
-
-
-
-
-
-
-
-		
-			waitForImage(canvas);
-
-
-
-		    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+					waitForImage();
                 });
+				
+				
                 $('#clear').click(function(e){
                     e.preventDefault();
                     canvas.width = canvas.width;
@@ -247,6 +196,24 @@ function waitForImage(){
 			
 			// Use this to check for 'friend' connections...  Copy code from WaitForImage
 			$(function waitForConnections(){
-//					doIt();
-				setTimeout(waitForConnections, 500);
+				$('#Page').hide();
+				$('#waiting').hide();
+				var ready = $.ajax({
+					type: "POST",
+					url: "server.php",
+					data: "c=1",
+					cache: false,
+					async: false
+				}).responseText;
+				
+				if(ready == "DRAW"){
+					$('#Page').show();
+					doIt();
+				}else if(ready == "FRND"){
+					//$('#waiting').show();
+					waitForImage();
+					doIt();
+				}else{
+					setTimeout(waitForConnections, 500);
+				}
 			})
