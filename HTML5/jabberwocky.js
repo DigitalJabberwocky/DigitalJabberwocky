@@ -5,14 +5,14 @@
 
 function outputImage(image){
 	// SEND IMAGE TO SERVER
-/*	var data = $.ajax({
+	window.open(image, 'Canvas Export','height=400,width=400');
+	var data = $.ajax({
 		type: "POST",
 		url: "server.php",
-		data: image
+		data: "i=" + image,
 		cache: false,
 		async: false
 	}).responseText;
-*/
 }
 
 
@@ -89,7 +89,7 @@ function waitForImage(){
 		// IF THEY HAVE, waiting = 0;
 
 		
-	if(waiting == "0"){
+	if(waiting == "DRAW"){
 			// SHOW PART OF THE OTHER IMAGE
 //		    canvas.width = canvas.width;
 //		    canvas.height = canvas.height;
