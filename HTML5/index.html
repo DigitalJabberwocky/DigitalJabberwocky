@@ -6,9 +6,10 @@
         <style type="text/css">
             #canvas1{ border: solid 1px greenyellow;cursor: crosshair;float: left;}
             .center{}
+			img{border: solid 1px greenyellow; display:block}
             #colors{margin:0;padding:0;float: left;}
-            #colors li{ height: 20px; width: 20px; display: block; cursor: pointer; }
-            #colors li.selected{ height: 18px; width: 18px; display: block; border: solid 1px #eee; }
+            #colors li{ height: 20px; width: 20px; display: block; cursor: pointer; border: solid 1px greenyellow;  }
+            #colors li.selected{ height: 20px; width: 20px; display: block; border: solid 1px #eee; }
             label{float: left;}
         </style>
         <script src="jquery.js" type="text/javascript"></script>
@@ -17,8 +18,9 @@
     <body>
 
         <div id="Page" class="center" style="">
-            <h1>Fun With HTML5 canvas</h1>
-            <canvas id="canvas1" width="400" height="400" ></canvas>
+            <h1></h1>
+			<img src="image.php" style=""/>
+            <canvas id="canvas1" width="800" height="600" ></canvas>
             <br/>
             <ul id="colors">
                 <li style="background-color:black;"> </li>
@@ -36,6 +38,7 @@
                 <li style="background-color:#82B82C;"> </li>
                 <li style="background-color:#0099FF;"> </li>
                 <li style="background-color:#ff00ff;"> </li>
+				<li style="background-color:#ffffff;"> </li>
             </ul>
             <br style="clear:both;"/>
             <label for="brush">Brush Size:</label><input name="brush" id="brush_size" type="range" value="5"  min="0" max="100" />
@@ -45,7 +48,8 @@
             <button id="export" href="#">Export as Image</button> 
 
         </div>
-<div id="waiting" style="">Waiting for your friend to draw their image</div>
+<div id="waitForDraw" style="">Waiting for your friend to draw their image.</div>
+<div id="waitForFriend" style="">Waiting for your a friend to join.</div>
 <!--<script type="text/javascript">
 
   var _gaq = _gaq || [];

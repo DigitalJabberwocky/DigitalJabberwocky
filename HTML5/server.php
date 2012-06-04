@@ -1,30 +1,77 @@
 <?php
 
 
-$log = file_get_contents("log.txt");
-session_start();
-
-$log = explode("\r\n", $log);
-
-foreach($log as $v){
-	
-	
-	$v = explode("\t", $v);
-	
-	
-	if($v[0] == "JOIN"){
-		$clients[] = $v[1];
+// A function to list the contents of a directory, ignoring the . and .. entry.
+function getDirectoryList(){
+	// Opening the directory.
+	$handle = opendir('./game/');
+	// Loop through each directory entry.
+	while(false !== ($entry = readdir($handle))) {
+		if($entry != "." && $entry != ".."){
+			// Put the entry into our dir array.
+			$dir[] = $entry;
+		}
 	}
-	
+	// Close the directory.
+	closedir($handle);
+	// Return the list of directory entries.
+	return $dir;
 }
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Start a session.
+session_start();
+
+// Get the listing from our directory.
+$dir = getDirectoryList();
+
+
+
+foreach($dir as $v){
+	$v = explode(".", $v);
+	
+	if($v[1] == "client"){
+		$clients[] = $v[0];
+	}
+	
+	if($v[1] == "png"){
+		$images[] = $v[0];
+	}
+}
+
+if(count($images) > 0){
+	sort($images, SORT_NUMERIC);
+}
 
 
 if(!in_array(session_id(), $clients)){
-	file_put_contents("log.txt", "JOIN\t" . session_id() . "\r\n", FILE_APPEND);
+	file_put_contents("./game/".session_id().".client", "");
 }
 
 
@@ -32,17 +79,28 @@ if(!in_array(session_id(), $clients)){
 
 
 
-//if($_SESSION['connected'] == false){
-	if(count($clients) == 2){
-		if($clients[0] == session_id()){
-			echo "DRAW";
-		}else{
-			echo "FRND";
-		}
+if(count($clients) == 2){
+	if($clients[0] == session_id()){
+		$output = "DRAW";
+	}else{
+		$output = "FRND";
 	}
-	$_SESSION['connected'] = true;
-//}
+}
+$_SESSION['connected'] = true;
 
+
+
+
+$x = $images[count($images)-1];
+if(!empty($x)){
+	$x = explode("_", $x);
+	
+	if($x[1] != session_id()){
+		$output = "DRAW";
+	}else{
+		$output = "";
+	}
+}
 
 
 
@@ -50,44 +108,16 @@ if(!in_array(session_id(), $clients)){
 if(!empty($_POST['i'])){
 	$i = explode(",", $_POST['i']);
 	$i = str_replace(" ", "+", $i[1]);
-	file_put_contents("image.png", base64_decode($i));
+	
+	$file_name = count($images)+1 . "_" . session_id() . ".png";
+	$output = "";
+	
+	file_put_contents("./game/".$file_name, base64_decode($i));
 }
 
 
 
-
-
-
-
-/*
-
-
-
-
-
-
-
-if($_POST['c'] == "1"){
-	echo "FRND";
-}
-
-
-if($_POST['w'] == "1"){
-	echo "1";
-}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
+echo $output;
 
 
 
