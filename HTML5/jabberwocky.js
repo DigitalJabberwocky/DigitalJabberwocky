@@ -83,7 +83,6 @@ function waitForImage(){
 	var waiting = $.ajax({
 		type: "POST",
 		url: "server.php",
-		data: "w=1",
 		cache: false,
 		async: false
 	}).responseText;
@@ -91,20 +90,41 @@ function waitForImage(){
 		// CHECK IF THE PLAYER HAS FINISHED DRAWING
 		// IF THEY HAVE, waiting = 0;
 
-		
-	if(waiting == "DRAW"){
-			// SHOW PART OF THE OTHER IMAGE
-		    $('#colors li:first').click();
-		    $('#brush_size').change();
-		    undoHistory = [];
-			$('#Page').show();
-			canvasInit();
+	var x = waiting.split("\r\n");
+	if(x[0] == "FINN"){
+		finished(waiting);
 	}else{
-		setTimeout(waitForImage, 500);
+		if(waiting != "" && waiting != "FRND" && waiting != "FINN"){
+				document.getElementById('prev').src = "image.php?x=" + Math.random();
+				document.getElementById('part').innerHTML = "You are drawing: " + waiting;
+				$('#colors li:first').click();
+				$('#brush_size').change();
+				undoHistory = [];
+				$('#Page').show();
+				canvasInit();
+		}else{
+			setTimeout(waitForImage, 500);
+		}
 	}
 }	
 			
+
 			
+			
+
+function finished(data){
+	$('#Page').hide();
+	$('#waitForDraw').hide();
+	$('#images').show();
+	
+	data = data.split("\r\n");
+
+	for(var i=1; i<data.length-1; i++){
+		document.getElementById('img_'+i).src = "./game/" + data[i] + ".png";
+	}
+	
+	
+}
 			
 			
 			
@@ -200,6 +220,7 @@ $(function waitForConnections(){
 	document.onselectstart = function() {return false;} // ie
 	//document.onmousedown = function() {return false;} // mozilla
 	
+	$('#images').hide();
 	$('#Page').hide();
 	$('#waitForDraw').hide();
 	var ready = $.ajax({
@@ -210,9 +231,10 @@ $(function waitForConnections(){
 		async: false
 	}).responseText;
 	
-	if(ready == "DRAW"){
+	if(ready != "" && ready != "FRND"){
 		$('#waitForFriend').hide();
 		$('#Page').show();
+		document.getElementById('part').innerHTML = "You are drawing: " + ready;
 		doIt();
 	}else if(ready == "FRND"){
 		$('#waitForFriend').hide();

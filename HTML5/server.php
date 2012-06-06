@@ -52,6 +52,13 @@ session_start();
 $dir = getDirectoryList();
 
 
+//$parts = array("head", "body", "left arm", "right arm", "left leg", "right leg");
+$parts = array("head", "body", "legs");
+
+if(empty($dir)){
+	file_put_contents("./game/".session_id().".client", "");
+	$dir = getDirectoryList();
+}
 
 foreach($dir as $v){
 	$v = explode(".", $v);
@@ -81,12 +88,11 @@ if(!in_array(session_id(), $clients)){
 
 if(count($clients) == 2){
 	if($clients[0] == session_id()){
-		$output = "DRAW";
+		$output = $parts[0];
 	}else{
 		$output = "FRND";
 	}
 }
-$_SESSION['connected'] = true;
 
 
 
@@ -96,7 +102,7 @@ if(!empty($x)){
 	$x = explode("_", $x);
 	
 	if($x[1] != session_id()){
-		$output = "DRAW";
+		$output = $parts[count($images)];//"DRAW";
 	}else{
 		$output = "";
 	}
@@ -115,8 +121,21 @@ if(!empty($_POST['i'])){
 	file_put_contents("./game/".$file_name, base64_decode($i));
 }
 
+if(count($images) == count($parts)){
+	$output = "FINN\r\n";
+	foreach($images as $v){
+		$output .= $v . "\r\n";
+	}
+}
 
-
+/*$output = "FINN
+1_e6thl2v45151kho4bjn6m6rih1
+2_i6mp72kaotol34tl2eia29ckm6
+3_e6thl2v45151kho4bjn6m6rih1
+4_i6mp72kaotol34tl2eia29ckm6
+5_e6thl2v45151kho4bjn6m6rih1
+6_i6mp72kaotol34tl2eia29ckm6";
+*/
 echo $output;
 
 
